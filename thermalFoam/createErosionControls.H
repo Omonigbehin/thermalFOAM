@@ -1,35 +1,12 @@
 /*---------------------------------------------------------------------------*\
   Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
 
-  This file is part of thermalFOAM.
-
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
-
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
-\*---------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------*\
     createErosionControls.H - Simple Thaw-Based Erosion Parameters
-
-    Simplified erosion model: cells are removed when fully thawed.
-
-    This replaces the D*-based model from Omonigbehin et al. (2025) with a
-    simpler phase-change-driven approach:
       - Cells are removed when liquidFraction >= thawThreshold
       - No erosion rate law - immediate removal upon reaching threshold
       - Niche morphology tracking (depth and volume) is retained
 
-    This file should be included in createFields.H AFTER convectionProperties
-    but BEFORE field declarations.
+    This is an helper file that should be included in createFields.H 
 \*---------------------------------------------------------------------------*/
 
 // ==========================================================================
@@ -43,17 +20,17 @@ wordList erosionBoundaries;
 // 1.0 = fully thawed (all ice melted)
 // 0.5 = half melted
 // 0.0 = remove as soon as any melting begins
-scalar thawThreshold = 1.0;
+scalar thawThreshold = 1.0; //default value
 
 // Geometry bounds for erosion zone (Z-coordinates)
 scalar bluffCrest = 0.20;
 scalar bluffBase = 0.11;
 
 // ==========================================================================
-// NICHE DEPTH TRACKING PARAMETERS (retained from D* model)
+// NICHE DEPTH TRACKING PARAMETERS
 // ==========================================================================
 
-scalar nicheTrackingZ = 0.18;      // Z-coordinate to track niche depth [m]
+scalar nicheTrackingZ = 0.135;      // Z-coordinate to track niche depth [m]
 scalar nicheTrackingTol = 0.005;   // Tolerance band around Z [m]
 
 // Read from dictionary if erosionControls exists
@@ -127,7 +104,7 @@ if (transportProperties.found("erosionControls"))
     }
 
     // ======================================================================
-    // WARN ABOUT DEPRECATED D* PARAMETERS
+    // these are palceholders for future extensions
     // ======================================================================
 
     if (erosionControlsDict.found("waveHeight") ||
@@ -165,3 +142,4 @@ if (transportProperties.found("erosionControls"))
 }
 
 Info<< "Thaw-based erosion parameters initialized.\n" << endl;
+
