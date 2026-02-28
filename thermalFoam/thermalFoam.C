@@ -1,20 +1,52 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | www.openfoam.com
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+    Copyright (C) 2026
+    Omonigbehin Olorunfemi
+-------------------------------------------------------------------------------
+License
+    This file is part of thermalFOAM.
 
-  This file is part of thermalFOAM.
+    thermalFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
+    thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
 
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
+    You should have received a copy of the GNU General Public License
+    along with thermalFOAM.  If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------------
+Application
+    thermalFOAM
 
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
+Description
+    Transient solver for coupled heat transfer, phase change, and
+    thaw-driven erosion of coastal permafrost.
+
+    Governing equation:
+        ∂H/∂t − ∇·(K ∇T) = 0
+
+    where enthalpy H incorporates latent heat effects using an
+    enthalpy-porosity formulation.
+
+    Key features:
+      - Implicit enthalpy-porosity phase change
+      - Wave-aware convective heat flux boundary condition
+      - Dynamic cell removal for thaw-based erosion
+      - Compatible with dynamicRefineFvMesh
+      - Sequential solution strategy with Picard iteration control
+
+Author
+    Omonigbehin Olorunfemi
+    PhD Candidate, Institut National de l Recherche Scientific
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
