@@ -1,0 +1,124 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+convertToMeters 1;
+
+// Key experimental dimensions
+stillWaterLevel     0.16;   // Still water level height [m]
+waveZoneBottom      0.11;   // Bottom of wave impact zone [m]
+protectedZoneBottom 0.00;   // Bottom of protected zone [m]
+
+vertices
+(
+    // Front face (y = 0) - Wave-facing side
+    (7.38 0.000 $protectedZoneBottom)  // 0
+    (7.38 0.000 $waveZoneBottom)       // 1
+    (7.38 0.000 $stillWaterLevel)      // 2
+    (7.38 0.000 0.27)                  // 3
+    (7.58 0.000 0.27)                  // 4
+    (7.58 0.000 $stillWaterLevel)      // 5
+    (7.58 0.000 $waveZoneBottom)       // 6
+    (7.58 0.000 $protectedZoneBottom)  // 7
+    
+    // Back face (y = 0.002) - One-cell thickness
+    (7.38 0.27 $protectedZoneBottom)  // 8
+    (7.38 0.27 $waveZoneBottom)       // 9
+    (7.38 0.27 $stillWaterLevel)      // 10
+    (7.38 0.27 0.27)                  // 11
+    (7.58 0.27 0.27)                  // 12
+    (7.58 0.27 $stillWaterLevel)      // 13
+    (7.58 0.27 $waveZoneBottom)       // 14
+    (7.58 0.27 $protectedZoneBottom)  // 15
+);
+
+blocks
+(
+    hex (0 7 15 8 1 6 14 9) (60 27 22) simpleGrading (1 1 1) // Protected zone: 0.00m to 0.11m   
+    hex (1 6 14 9 2 5 13 10) (60 27 20) simpleGrading (1 1 1) // Wave impact zone: 0.11m to 0.16m 
+    hex (2 5 13 10 3 4 12 11) (60 27 44) simpleGrading (1 1 1) // Air-exposed zone: 0.16m to 0.27m
+);
+
+boundary
+(
+    protectedZone
+    {
+        type wall;
+        faces
+        (
+            (0 8 9 1)  // Front face of protected zone
+        );
+    }
+    
+    waveFacing
+    {
+        type wall;
+        faces
+        (
+            (1 9 10 2)  // Front face of former wave impact zone
+            (2 10 11 3) // Front face of former air-exposed zone
+        );
+    }
+    
+    top
+    {
+        type wall;
+        faces
+        (
+            (3 11 12 4)  // Top surface
+        );
+    }
+    
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (0 7 15 8)  // Bottom surface
+        );
+    }
+    
+    backSurface
+    {
+        type wall;
+        faces
+        (
+            (7 6 14 15)  
+            (6 5 13 14)  
+            (5 4 12 13)  
+        );
+    }
+    
+    frontAndBack
+    {
+        type wall;
+        faces
+        (
+            // Front faces (y=0)
+            (0 7 6 1)     
+            (1 6 5 2)     
+            (2 5 4 3)     
+            // Back faces (y=0.002)
+            (8 15 14 9)   
+            (9 14 13 10)  
+            (10 13 12 11) 
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

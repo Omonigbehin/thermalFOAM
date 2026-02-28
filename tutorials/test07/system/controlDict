@@ -1,0 +1,76 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     thermalFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1250;        
+
+deltaT          0.1;         // Conservative time step for heat diffusion
+
+adjustTimeStep  yes;
+
+
+writeControl    adjustableRunTime;
+writeInterval   20;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+
+runTimeModifiable yes;
+
+functions
+{
+    horizontalProbes
+    {
+        type            probes;
+        libs            ("libsampling.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        
+        fields          (T liquidFraction Kth CthEff);
+        
+        probeLocations
+        (
+            (7.3825 0.09 0.135)
+            
+            (7.4025 0.09 0.135)
+            
+            (7.4225 0.09 0.135)
+            
+            (7.4425 0.09 0.135)
+            
+            (7.4625 0.09 0.135)
+            
+            (7.4825 0.09 0.135)
+            
+            (7.5025 0.09 0.135)
+            
+            (7.5225 0.09 0.135)
+            
+            (7.5425 0.09 0.135)
+            
+            (7.5625 0.09 0.135)
+            (7.58 0.09 0.135)
+        );
+    }
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

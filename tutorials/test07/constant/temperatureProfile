@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2506                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      temperatureProfile;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// The keywords now start at the top level, not inside a sub-dictionary.
+axis    x;              // x | y | z
+origin  (7.38 0 0);        // reference point for the axis
+outside extrapolate;          // clamp | extrapolate (linear)
+
+// 1-D table: s [m], T [°C]
+data
+(
+	(0.00	-5.65)
+	(0.02  -10.95)
+    (0.04  -16.03)
+    (0.06  -16.80)
+    (0.08  -17.03)
+    (0.10  -16.86)
+    (0.12  -16.82)
+    (0.20  -20.00)
+);
+
+
+// ************************************************************************* //

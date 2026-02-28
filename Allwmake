@@ -1,0 +1,7 @@
+#!/bin/bash
+cd "${0%/*}" || exit 1
+. "${WM_PROJECT_DIR:?}/bin/tools/RunFunctions"
+
+# Build thermalFoam and the waveExternalWallHeatFluxTemperature boundary condition
+# Both are compiled together from the same Make/files
+(cd thermalFoam && wmake)

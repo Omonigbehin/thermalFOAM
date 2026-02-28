@@ -1,0 +1,22 @@
+#!/bin/sh
+cd "${0%/*}" || exit 1
+
+# Clean time directories (keep 0.org)
+rm -rf 0 [1-9]* 
+
+# Clean log files
+rm -f log.*
+
+# Clean mesh
+rm -rf constant/polyMesh
+
+# Clean postProcessing
+rm -rf postProcessing
+
+# Clean processor directories (if parallel run was used)
+rm -rf processor*
+
+# Clean sets and zones
+rm -rf constant/polyMesh/sets
+
+echo "Case cleaned."

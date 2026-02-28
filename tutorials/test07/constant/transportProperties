@@ -1,0 +1,102 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+// SOIL PROPERTIES
+
+thetas      thetas      [0 0 0 0 0 0 0]     0.39294; // Saturated water content (porosity)
+theta_org   theta_org   [0 0 0 0 0 0 0]     0.0; // Organic matter content (5th phase)
+Cthorg      Cthorg      [1 -1 -2 -1 0 0 0]  2.5e6;
+
+
+// SFCC (Soil Freezing Characteristic Curve) PARAMETERS
+ // Enthalpy-porosity mushy zone (for phase change smoothing)
+useEnthalpyPorosity     true;
+T_solidus               272.8;    // or appropriate for pure sand
+T_liquidus              274.0;
+
+// SFCC (Soil Freezing Characteristic Curve) - Power law model
+// Power law: u = (ΔT/T_ref)^b where u = unfrozen fraction
+SFCC_Tref       SFCC_Tref   [0 0 0 1 0 0 0]     1;
+SFCC_b          SFCC_b      [0 0 0 0 0 0 0]     3;
+
+// Smoothing width [K] near melting point for numerical stability
+SFCC_smoothWidth    0.3; // Recommended: 0.1-0.5 K for laboratory, 0.5-1.0 K for field
+
+
+// SFCC Model Selection
+SFCCModel       gaussian;    // Options: "linear", "powerLaw", "gaussian"
+
+
+// Gaussian parameters (permaFoam style)
+SFCC_W          0.15;         // Freezing curve width [K]
+
+// Residual unfrozen water (applies to all models)
+thetar_frac     0.018275;        // Fraction that doesn't freeze (0-1)
+
+
+// PHASE CHANGE PROPERTIES
+L           L           [1 -1 -2 0 0 0 0]   334e6; 
+Tmelt       Tmelt       [0 0 0 1 0 0 0]     273.15; // Melting temperature [K]
+
+// Temperature bounds for numerical stability [K]
+Tminc       Tminc       [0 0 0 1 0 0 0]     255.24;
+Tmaxc       Tmaxc       [0 0 0 1 0 0 0]     294.09;
+
+// Minimum effective heat capacity floor [J/(m³·K)]
+minCthEff   1e5;
+
+
+// THERMAL CONDUCTIVITY (Johansen Model) [W/(m·K)]
+Kthw        [1 1 -3 -1 0 0 0]   0.62;       // Liquid water
+Kthice      [1 1 -3 -1 0 0 0]   2.3;        // Ice
+Kthsoil     [1 1 -3 -1 0 0 0]   7.8;        // Mineral soil
+Kthair      [1 1 -3 -1 0 0 0]   0.026;      // Air
+
+// VOLUMETRIC HEAT CAPACITIES [J/(m³·K)]
+Cthsoil     Cthsoil     [1 -1 -2 -1 0 0 0]  1.934e6;
+Cthw        Cthw        [1 -1 -2 -1 0 0 0]  4.1920e6;
+Cthice      Cthice      [1 -1 -2 -1 0 0 0]  1.9256e6;
+Cthair      Cthair      [1 -1 -2 -1 0 0 0]  1.327e3;
+
+erosionControls
+{
+    // Master switch
+    enableErosion           true;
+
+    // Thaw threshold for cell removal (0-1)
+    // 1.0 = fully thawed (all ice melted)
+    // 0.5 = half melted
+    thawThreshold           0.99;
+
+    // Erosion zone geometry
+    bluffCrest              0.27;       // Upper bound of erosion zone [m]
+    bluffBase               0.11;       // Lower bound of erosion zone [m]
+
+    // Boundary patches
+    erosionBoundaries       (waveFacing erodedWall);   // Patches where erosion starts
+    erodedPatch             erodedWall;     // Patch for newly exposed surfaces
+
+    // Niche depth tracking
+    nicheTrackingZ          0.135;      // Z-coordinate to track niche depth [m]
+    nicheTrackingTol        0.005;      // Tolerance band [m]
+
+    // Safety threshold
+    erosionWarningThreshold 0.5;        // Warn if volume < this fraction
+}
+
+// ************************************************************************* //

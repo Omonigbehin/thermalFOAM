@@ -1,0 +1,18 @@
+# OpenFOAM build artifacts
+*.dep
+*.o
+*.so
+Make/linux*
+lnInclude
+
+# Case outputs
+[0-9]*
+processor*
+postProcessing
+VTK
+*.log
+
+# Editor / OS junk
+*~
+*.swp
+.DS_Store

@@ -1,0 +1,5 @@
+SOURCE = \
+waveExternalWallHeatFluxTemperatureFvPatchScalarField.C \
+thermalFoam.C \
+
+# sources

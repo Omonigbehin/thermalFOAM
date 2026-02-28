@@ -1,0 +1,73 @@
+#!/bin/sh
+cd "${0%/*}" || exit 1
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+
+APPLICATION=thermalFoam
+
+info()  { echo "[INFO]  $*"; }
+warn()  { echo "[WARN]  $*" >&2; }
+fail()  { echo "[ERROR] $*" >&2; exit 1; }
+
+# Preconditions
+[ -f system/blockMeshDict ]   || fail "Missing system/blockMeshDict"
+[ -f system/createPatchDict ] || fail "Missing system/createPatchDict"
+[ -f system/topoSetDict ]     || fail "Missing system/topoSetDict"
+[ -f system/setFieldsDict ]   || warn "Missing system/setFieldsDict (setFields will fail unless you add it)"
+
+# Reset 0 directory
+rm -rf 0
+cp -r 0.org 0
+
+# Mesh
+info "Meshing: blockMesh → topoSet → createPatch (-overwrite) → checkMesh"
+runApplication blockMesh
+runApplication topoSet
+runApplication createPatch -overwrite
+
+# Add erodedWall patch if missing (createPatch skips empty faceSets)
+if ! grep -q '^[[:space:]]*erodedWall[[:space:]]*$' constant/polyMesh/boundary; then
+    info "Adding zero-face erodedWall patch to boundary file"
+    
+    # Get startFace for new patch (after last existing patch)
+    startFace=$(awk '/startFace/{sf=$2} /nFaces/{nf=$2} END{print sf+nf}' constant/polyMesh/boundary)
+    
+    # Increment patch count (first number after header)
+    awk '
+        /^[0-9]+$/ && !done {print $1+1; done=1; next}
+        {print}
+    ' constant/polyMesh/boundary > constant/polyMesh/boundary.tmp
+    mv constant/polyMesh/boundary.tmp constant/polyMesh/boundary
+    
+    # Insert erodedWall entry before final closing parenthesis
+    awk -v sf="$startFace" '
+        /^\)$/ && !inserted {
+            print "    erodedWall"
+            print "    {"
+            print "        type            wall;"
+            print "        inGroups        1(wall);"
+            print "        nFaces          0;"
+            print "        startFace       " sf ";"
+            print "    }"
+            inserted=1
+        }
+        {print}
+    ' constant/polyMesh/boundary > constant/polyMesh/boundary.tmp
+    mv constant/polyMesh/boundary.tmp constant/polyMesh/boundary
+fi
+
+runApplication checkMesh
+
+# Verify erodedWall now exists
+if ! grep -q '^[[:space:]]*erodedWall[[:space:]]*$' constant/polyMesh/boundary; then
+    fail "Failed to add erodedWall patch"
+fi
+
+# Initial conditions
+info "Applying initial field values: setFields"
+runApplication setFields
+
+# Run solver (serial)
+info "Running solver: ${APPLICATION}"
+runApplication ${APPLICATION}
+
+info "Done."
