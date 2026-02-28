@@ -1,0 +1,151 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2506                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volScalarField;
+    location    "0";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 257.6;
+
+boundaryField
+
+{
+    protectedZone
+    {
+        type            externalWallHeatFluxTemperature;
+        mode            coefficient;
+        h               uniform 160;
+        Ta              uniform 278.85;
+        kappaMethod     lookup;
+        kappa           Kth;
+        value           uniform 265.53;
+    }
+    
+	waveFacing
+    {
+        type            waveExternalWallHeatFluxTemperature;
+        mode            coefficient;
+        h               uniform 50;
+        Ta              uniform 277.15;
+        hWater
+		{
+			type            tableFile;
+			file            "constant/hWater_Test_07.dat";
+			outOfBounds     clamp;
+			interpolationScheme linear;
+		}
+        TaWater
+        {
+            type            tableFile;
+            file            "constant/water_temperature_Test_07.txt";
+            outOfBounds     clamp;
+            interpolationScheme linear;
+        }
+        hAir            12;
+        TaAir           293.15;
+        stillWaterLevel 0.16;
+        waveMode        file;
+        waveFile        "constant/waveRecord_WF.dat";
+        kappaMethod     lookup;
+        kappa           Kth;
+        value           uniform 265.53;
+    }
+    
+	top
+    {
+        type            externalWallHeatFluxTemperature;
+        mode            coefficient;
+        h               uniform 12;
+        Ta              uniform 294.15;
+        kappaMethod     lookup;
+        kappa           Kth;
+        value           uniform 294.15;
+    }
+    
+	bottom
+	{
+		type            zeroGradient;
+	}
+    //{
+    //    type            uniformFixedValue;
+    //    uniformValue    tableFile;
+    //    uniformValueCoeffs
+    //    {
+    //        file            "constant/cold_plate_temperature_Test_07.txt";
+    //    }
+    //    value           uniform 255.24;
+    //}
+    
+	
+	backSurface
+    {
+		type            zeroGradient;
+	}
+	//{
+    //    type            uniformFixedValue;
+    //   uniformValue    tableFile;
+    //    uniformValueCoeffs
+    //    {
+    //        file            "constant/cold_plate_temperature_Test_07.txt";
+    //   }
+    //    value           uniform 255.24;
+    //}
+    
+	frontAndBack
+    {
+        type            externalWallHeatFluxTemperature;
+        mode            coefficient;
+        h               uniform 6;
+        Ta              uniform 291;
+        kappaMethod     lookup;
+        kappa           Kth;
+        value           uniform 291;
+
+    }
+    
+	erodedWall
+    {
+        type            waveExternalWallHeatFluxTemperature;
+        mode            coefficient;
+        h               uniform 50;
+        Ta              uniform 277.15;
+        hWater
+		{
+			type            tableFile;
+			file            "constant/hWater_Test_07.dat";
+			outOfBounds     clamp;
+			interpolationScheme linear;
+		}
+        TaWater
+        {
+            type            tableFile;
+            file            "constant/water_temperature_Test_07.txt";
+            outOfBounds     clamp;
+            interpolationScheme linear;
+        }
+        hAir            40;
+        TaAir           291.15;
+        stillWaterLevel 0.16;
+        waveMode        file;
+        waveFile        "constant/waveRecord_EW.dat";
+        kappaMethod     lookup;
+        kappa           Kth;
+        value           uniform 277.15;
+    }
+}
+
+
+// ************************************************************************* //
