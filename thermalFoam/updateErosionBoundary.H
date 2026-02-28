@@ -1,32 +1,9 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
+  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
 
-  This file is part of thermalFOAM.
-
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
-
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
-\*---------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------*\
     updateErosionBoundary.H - Simple Thaw-Based Erosion Model (PARALLEL-SAFE)
 
     Simplified erosion model: cells are removed when fully thawed.
-
-    This replaces the D*-based model from Omonigbehin et al. (2025) with a
-    simpler phase-change-driven approach:
-      - Cells are removed when liquidFraction >= thawThreshold
-      - No erosion rate law - immediate removal upon reaching threshold
-      - Niche morphology tracking (depth and volume) is retained
 
     REQUIRED INPUTS:
       From createErosionControls.H:
@@ -485,3 +462,4 @@ else
 }
 
 Info<< "--- End thaw-based erosion ---" << nl;
+
