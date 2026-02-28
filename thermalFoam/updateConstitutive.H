@@ -1,35 +1,15 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
+  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
 
   This file is part of thermalFOAM.
 
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
-
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
-\*---------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------*\
     updateConstitutive.H - Unified Physics Update for Implicit Enthalpy Method
 
-    v2512-wave-saturation: WAVE-DRIVEN PORE SATURATION MODEL
-
     This file computes:
-    1. Phase fractions (thetal, thetag) from liquidFraction
-       WITH wave-driven saturation: as ice melts, freed pore space AND
-       existing air voids fill with liquid water from wave action.
+    1. Phase fractions (thetal, thetag) from liquidFraction:
     2. Thermal conductivity (Johansen geometric mean model)
     3. Sensible heat capacity C_sens (no latent contribution)
     4. Effective heat capacity CthEff = C_sens + L·θ_orig·|∂f_l/∂T| (APPARENT)
-       NOTE: Latent heat uses ORIGINAL theta (only original ice content melts)
 
     KEY DESIGN PRINCIPLES
     ---------------------
@@ -46,7 +26,7 @@
 
     PHYSICS
     -------
-    Initial state:
+    Initial state examples:
       theta_orig = 0.198  (ice + residual liquid)
       porosity   = 0.448
       air voids  = 0.448 - 0.198 = 0.250
@@ -66,7 +46,6 @@
     2. Every Picard iteration in the thermal solution loop
     3. After mesh changes (erosion events)
 
-    NO STATIC VARIABLES - safe for multiple includes per timestep.
 
 \*---------------------------------------------------------------------------*/
 
