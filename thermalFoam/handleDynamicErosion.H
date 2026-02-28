@@ -1,34 +1,17 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
+  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
 
-  This file is part of thermalFOAM.
-
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
-
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
-\*---------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------*\
     handleDynamicErosion.H - Erosion Statistics and Safety Monitoring
-    (PARALLEL-SAFE VERSION)
+    (its parallel safe implementaion stalls in this version, to be reviewed)
 
     This file handles:
     1. Runtime safety checks (excessive erosion warning)
     2. Output-time diagnostics
 
-    Note: Cumulative erosion logging is now handled in updateErosionBoundary.H
+    Note: Cumulative erosion logging is handled in updateErosionBoundary.H
     to ensure logging occurs exactly when cells are removed.
 
-    PARALLEL FIX: All reduce() operations are now UNCONDITIONAL to prevent
+   All reduce() operations are UNCONDITIONAL to prevent
     deadlocks when runTime.outputTime() differs across processors.
 \*---------------------------------------------------------------------------*/
 
@@ -125,3 +108,4 @@ if (enableErosion)
             << "=======================================" << endl;
     }
 }
+
