@@ -1,31 +1,9 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
+  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
 
   This file is part of thermalFOAM.
 
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
-
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
-\*---------------------------------------------------------------------------*/
-
-/*--------------------------------*- C++ -*----------------------------------*\
-|   thermalFoam - createFields.H                                              |
-|   v2509-source-implicit - Field initialization for source-based EP method   |
-|                                                                             |
-|   Key features:                                                             |
-|   - H field for diagnostics/output (T is primary variable)                  |
-|   - C_sens is primary heat capacity (no latent spike)                       |
-|   - liquidFraction updated from T in solver, not from SFCC                  |
-|   - No static caching of parameters                                         |
+|   thermalFoam - createFields.H                                              |                                         |
 \*---------------------------------------------------------------------------*/
 
 Info<< "Reading transportProperties\n" << endl;
@@ -75,7 +53,7 @@ Info<< "  Kthair = " << Kthair.value() << " W/m/K" << endl;
 // SFCC (Soil Freezing Characteristic Curve) PARAMETERS
 //
 // Supported SFCC models:
-//   "linear"   - Linear mushy zone (default, original thermalFoam behavior)
+//   "linear"   - Linear mushy zone
 //   "powerLaw" - Power-law: f_l = 1 - ((Tmelt - T)/Tref)^b  (McKenzie et al.)
 //   "gaussian" - Gaussian:  f_l = exp(-((T - Tmelt)/W)^2)   (permaFoam style)
 //
