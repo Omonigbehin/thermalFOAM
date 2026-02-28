@@ -1,32 +1,15 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
+  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
+  This file is part of thermalFOAM
+    
+enthalpyUpdate.H - H→T Recovery for Enthalpy-Primary Method
 
-  This file is part of thermalFOAM.
-
-  thermalFOAM is free software: you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the Free
-  Software Foundation, either version 3 of the License, or (at your option)
-  any later version.
-
-  thermalFOAM is distributed in the hope that it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along
-  with thermalFOAM. If not, see <https://www.gnu.org/licenses/>.
-\*---------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------*\
-    enthalpyUpdate.H - H→T Recovery for Enthalpy-Primary Method
-
-    v2510-enthalpy-primary: ENTHALPY-PRIMARY FORMULATION
+    v2506-enthalpy-primary: ENTHALPY-PRIMARY FORMULATION
 
     PURPOSE
     -------
     This file provides the H→T inversion (temperature recovery from enthalpy)
-    for use in the enthalpy-primary method. It is included here for reference
-    and alternative workflows.
+    for use in the enthalpy-primary method. It is included here as an alternative solution
 
     In the main solver (thermalFoam.C), this functionality is implemented
     inline using the invertEnthalpyToTemperature.H header functions.
@@ -43,22 +26,6 @@
     The inversion is model-dependent:
     - Linear SFCC: Analytical piecewise solution
     - Power-law/Gaussian SFCC: Newton iteration required
-
-    WHY ENTHALPY-PRIMARY FIXES COLD BIAS
-    ------------------------------------
-    In temperature-primary methods, we solve:
-        C_eff * ∂T/∂t = ∇·(K∇T)
-
-    During phase change (mushy zone), ∂T/∂H → 0 because temperature is
-    clamped at the melting plateau while latent heat is absorbed.
-    This means ∇T → 0 even though energy is being added, so diffusion
-    effectively stops.
-
-    In enthalpy-primary methods, we solve for H directly. Enthalpy always
-    diffuses continuously - it doesn't "plateau" during phase change.
-    When heat flux enters a cell, H increases. If H exceeds the threshold
-    for the current phase, the cell begins to melt. The latent heat is
-    naturally captured in the H field.
 
     SUPPORTED SFCC MODELS
     ---------------------
