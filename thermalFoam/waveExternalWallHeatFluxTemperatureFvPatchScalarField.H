@@ -6,7 +6,7 @@
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
     Copyright (C) 2011-2019 OpenFOAM Foundation
-    Copyright (C) 2025 Femi Omonigbehin, INRS-ETE (wave extensions)
+    Copyright (C) 2026 Femi Omonigbehin, INRS-ETE (wave extensions)
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -29,7 +29,7 @@ Description
       - monochromatic: Synthetic regular wave eta = H/2 * cos(omega*t + phase)
 
 Usage
-    \verbatim
+   
     bluffFace
     {
         type            waveExternalWallHeatFluxTemperature;
@@ -52,7 +52,7 @@ Usage
 
         value           uniform 263.15;
     }
-    \endverbatim
+    
 
     hWater and TaWater can be specified as:
       - A constant scalar: hWater 350;
