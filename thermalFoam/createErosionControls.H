@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  Copyright (C) 2025 Olorunfemi Omonigbehin, INRS-ETE
+  Copyright (C) 2026 Olorunfemi Omonigbehin, INRS-ETE
 
     createErosionControls.H - Simple Thaw-Based Erosion Parameters
       - Cells are removed when liquidFraction >= thawThreshold
@@ -142,4 +142,5 @@ if (transportProperties.found("erosionControls"))
 }
 
 Info<< "Thaw-based erosion parameters initialized.\n" << endl;
+
 
