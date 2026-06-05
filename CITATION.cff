@@ -10,8 +10,8 @@ authors:
   - family-names: Kurylyk
     given-names: Barret
   - family-names: Guimond
-    given-names: Julie
-version: 1.0.0
-doi: 10.5281/zenodo.19684137
+    given-names: Julia
+version: 1.0.1
+doi: 10.5281/zenodo.20562359
 license: GPL-3.0
 repository-code: https://github.com/Omonigbehin/thermalFOAM
