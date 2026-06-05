@@ -1,0 +1,25 @@
+#!/bin/bash
+cd "${0%/*}" || exit
+
+. "${WM_PROJECT_DIR:?}/bin/tools/RunFunctions"
+
+# -----------------------------------------------------------------------
+# Neumann benchmark — one-command run
+# -----------------------------------------------------------------------
+
+echo "=== Neumann Benchmark: thermalFoam vs Analytical Solution ==="
+echo ""
+
+# 1. Copy initial fields
+cp -r 0.org 0
+
+# 2. Generate mesh
+echo "--- Running blockMesh ---"
+runApplication blockMesh
+
+# 3. Run solver
+echo "--- Running thermalFoam ---"
+runApplication thermalFoam
+
+echo ""
+echo "=== Run complete ==="

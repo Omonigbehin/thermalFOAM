@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//
+// Initial temperature: uniform 263.15 K (−10 °C) — all ice
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 263.15;
+
+boundaryField
+{
+    left
+    {
+        // Warm surface — held at +10 °C throughout the simulation
+        type            fixedValue;
+        value           uniform 283.15;
+    }
+    right
+    {
+        // Far-field: zero-gradient (domain is long enough that the melt
+        // front never approaches the right boundary in 7 days)
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+    topAndBottom
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

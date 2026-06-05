@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     thermalFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         7200;     // 2 hours [s]
+
+deltaT          0.1;          // Initial timestep [s] — adaptive takes over quickly
+
+adjustTimeStep  yes;
+
+writeControl    adjustableRunTime;
+writeInterval   60;       // One snapshot every 60 seconds
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  10;
+writeCompression off;
+
+runTimeModifiable yes;
+
+// ************************************************************************* //

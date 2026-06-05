@@ -1,0 +1,80 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//
+// 1-D Neumann benchmark: semi-infinite column of pure water/ice
+//   x ∈ [0, 0.5 m]  — direction of heat propagation (500 cells, dx = 1 mm)
+//   y, z             — 1 cell each (thin slab), empty patches → true 1-D behaviour
+//
+// Left (x=0):  warm boundary, T = 283.15 K (+10 °C)
+// Right (x=0.5 m): zero-gradient (insulated / far field)
+// Initial T = 263.15 K (−10 °C), all ice
+
+convertToMeters 1;
+
+vertices
+(
+    (0.0  0.0   0.0)   // 0
+    (0.2  0.0   0.0)   // 1
+    (0.2  0.001 0.0)   // 2
+    (0.0  0.001 0.0)   // 3
+    (0.0  0.0   0.001) // 4
+    (0.2  0.0   0.001) // 5
+    (0.2  0.001 0.001) // 6
+    (0.0  0.001 0.001) // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (500 1 1) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    left
+    {
+        type wall;
+        faces ((0 4 7 3));
+    }
+    right
+    {
+        type wall;
+        faces ((1 2 6 5));
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+    topAndBottom
+    {
+        type empty;
+        faces
+        (
+            (0 1 5 4)
+            (3 7 6 2)
+        );
+    }
+);
+
+mergePatchPairs ();
+
+// ************************************************************************* //

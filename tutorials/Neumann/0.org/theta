@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      theta;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//
+// Total water content (ice + liquid).
+// Pure saturated medium: theta = thetas = 1.0 everywhere.
+// This field is static (NO_WRITE in thermalFoam) — it drives the
+// latent heat and conductivity calculations.
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   uniform 1.0;
+
+boundaryField
+{
+    left
+    {
+        type            zeroGradient;
+    }
+    right
+    {
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+    topAndBottom
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

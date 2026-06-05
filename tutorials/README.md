@@ -1,5 +1,129 @@
 # thermalFOAM Tutorials
 
+## Neumann — 1-D phase-change benchmark (Neumann analytical solution)
+
+This tutorial validates thermalFoam against the classical Neumann problem:
+a semi-infinite column of pure ice melting from one end at a fixed warm
+temperature.
+
+---
+
+### Physical setup
+
+| Parameter | Value |
+|-----------|-------|
+| Domain | 0.2 m (x, 1-D heat propagation) × 1 mm × 1 mm (empty y, z) |
+| Mesh | 500 × 1 × 1 hex cells, uniform dx = 0.4 mm |
+| Left boundary (x = 0) | Fixed temperature 283.15 K (+10 °C) |
+| Right boundary (x = 0.2 m) | Zero-gradient (insulated far field) |
+| Initial temperature | Uniform 263.15 K (−10 °C), all ice |
+| Material | Pure water/ice (no soil matrix, porosity = 1) |
+| SFCC model | Gaussian, width W = 0.1 K, T_solidus = 272.95 K, T_liquidus = 273.15 K |
+| Latent heat | 334 × 10⁶ J/m³ |
+| Solver mode | Enthalpy-porosity |
+| Run time | 0 – 7200 s (2 hours, adaptive dt) |
+
+---
+
+### Prerequisites
+
+1. OpenFOAM v2506 (or compatible ESI/OpenCFD release) sourced in your shell:
+   ```bash
+   source /usr/lib/openfoam/openfoam2506/etc/bashrc
+   ```
+2. thermalFoam compiled and on your `$PATH`:
+   ```bash
+   # From the repository root:
+   ./Allwmake
+   which thermalFoam
+   ```
+
+---
+
+### Running the tutorial
+
+```bash
+cd tutorials/Neumann
+./Allrun
+```
+
+`Allrun` performs these steps automatically:
+
+| Step | Tool | What it does |
+|------|------|-------------|
+| 1 | `cp -r 0.org 0` | Copies initial condition fields |
+| 2 | `blockMesh` | Builds the 500-cell 1-D mesh |
+| 3 | `thermalFoam` | Runs the thermal solver |
+
+To clean and restart from scratch:
+```bash
+./Allclean
+./Allrun
+```
+
+---
+
+### Key input files
+
+#### `constant/transportProperties`
+Pure water/ice material properties.  Important entries:
+
+```c++
+SFCCModel       gaussian;      // freezing curve model
+SFCC_W          0.1;           // Gaussian width [K]
+thetar_frac     0.0;           // no residual unfrozen water
+L               334e6;         // volumetric latent heat [J/m³]
+useEnthalpyPorosity  true;     // solver mode
+
+erosionControls
+{
+    enableErosion   false;     // disabled for benchmark
+}
+```
+
+#### `system/controlDict`
+```c++
+endTime         7200;     // [s] — 2 hours
+deltaT          0.1;      // initial step
+adjustTimeStep  yes;
+writeInterval   60;       // write every 60 s
+```
+
+#### `system/fvSolution` — Picard subdict
+```c++
+nCorrectors     50;
+tolerance       1e-6;
+flRelaxation    0.8;
+maxDeltaT       3600;     // [s]
+minDeltaT       0.01;     // [s]
+maxFourier      0.5;
+```
+
+---
+
+### Expected output
+
+- Write directories appear every 60 s: `60/`, `120/`, …, `7200/`
+- Key fields per timestep: `T`, `H`, `alphaIce`, `liquidFraction`, `CthEff`, `Kth`
+- The melt front should advance from the left boundary as a sharp interface
+
+---
+
+### Post-processing in ParaView
+
+```bash
+touch Neumann.foam && paraview Neumann.foam &
+```
+
+Useful visualisations:
+- **Temperature** along x-axis — compare against the Neumann analytical solution
+- **liquidFraction** — shows the sharp melt front position vs time
+- **alphaIce** — complementary view of ice fraction evolution
+
+---
+
+---
+
 ## test07 — Laboratory bluff erosion (Test 7 validation case)
 
 This tutorial reproduces Test 7 from Omonigbehin et al. (2025): wave-driven thaw
