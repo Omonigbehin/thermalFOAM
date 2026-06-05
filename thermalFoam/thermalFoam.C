@@ -31,22 +31,28 @@ Description
     Transient solver for coupled heat transfer, phase change, and
     thaw-driven erosion of coastal permafrost.
 
-    Governing equation:
-        ∂H/∂t − ∇·(K ∇T) = 0
+    Governing equation (apparent heat-capacity formulation):
+        c_eff(T) ∂T/∂t = ∇·(K_eff(T) ∇T)
 
-    where enthalpy H incorporates latent heat effects using an
-    enthalpy-porosity formulation.
+    where the latent heat of fusion L is absorbed into an effective
+    volumetric heat capacity:
+        c_eff = c_sens(T) + L |dθ_i/dT|
+
+    The unfrozen-water (liquid) fraction follows a Gaussian soil-freezing
+    characteristic curve (SFCC); the resulting nonlinear conduction-phase-
+    change coupling is resolved by Picard iteration with under-relaxation.
+    Enthalpy H is recovered each iteration for diagnostics/monitoring only.
 
     Key features:
-      - Implicit enthalpy-porosity phase change
+      - Apparent heat-capacity phase change with Gaussian SFCC
       - Wave-aware convective heat flux boundary condition
-      - Dynamic cell removal for thaw-based erosion
+      - Dynamic cell removal (removeCells/polyTopoChange) for thaw-based erosion
       - Compatible with dynamicRefineFvMesh
       - Sequential solution strategy with Picard iteration control
 
 Author
     Omonigbehin Olorunfemi
-    PhD Candidate, Institut National de l Recherche Scientific
+    PhD Candidate, Institut National de la Recherche Scientifique (INRS-ETE)
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
@@ -67,9 +73,9 @@ int main(int argc, char* argv[])
     // ======================================================================
     // PICARD ITERATION CONTROLS
     //
-    // Recommended settings for implicit enthalpy diffusion:
-    //   nCorrectors: 20-30 (more iterations help with mushy zone)
-    //   tolerance: 1e-3 K (can relax from 1e-4 with implicit scheme)
+    // Recommended settings for the apparent heat-capacity solve:
+    //   nCorrectors: 20-50 (more iterations help with mushy zone)
+    //   tolerance: 1e-3 to 1e-6 K
     //   flRelaxation: 0.7-0.9 (higher values after initial stabilization)
     // ======================================================================
 
@@ -93,10 +99,7 @@ int main(int argc, char* argv[])
     
     const scalar minCthEff = transportProperties.lookupOrDefault<scalar>("minCthEff", 1e5);
 
-    // Maximum CthEff cap to ensure beta = 1/CthEff doesn't become too small
-    // This prevents H diffusion from stalling in the mushy zone
-    // Physical interpretation: limits how much latent heat a cell can absorb
-    // at constant temperature before it must start warming
+    // Maximum CthEff for Fourier guidance (read by adaptive time-stepping)
     const scalar maxCthEff = transportProperties.lookupOrDefault<scalar>("maxCthEff", 1e8);
     
     // Temperature relaxation within Picard
@@ -115,12 +118,18 @@ int main(int argc, char* argv[])
     }
     
     // ======================================================================
-    // ENTHALPY-POROSITY METHOD CONTROLS
+    // APPARENT HEAT-CAPACITY METHOD CONTROLS
+    //
+    // Both branches solve c_eff dT/dt = div(K grad T); neither integrates
+    // an enthalpy equation.  The key name "useEnthalpyPorosity" is retained
+    // for backward compatibility with existing tutorial dictionaries.
+    //   true  = Picard-lagged CthEff (production/validated path)
+    //   false = non-lagged CthEff variant
     // ======================================================================
-    
+
     const bool useEnthalpyPorosity = transportProperties.lookupOrDefault<Switch>
     (
-        "useEnthalpyPorosity", 
+        "useEnthalpyPorosity",
         true
     );
     
@@ -148,16 +157,16 @@ int main(int argc, char* argv[])
     Info<< "\n=== Thermal Solution Method ===" << nl;
     if (useEnthalpyPorosity)
     {
-        Info<< "  Method: IMPLICIT ENTHALPY DIFFUSION (v2511)" << nl
-            << "  Solves: ∂H/∂t - ∇·(K·β·∇H) = deferred_correction" << nl
-            << "  where β = dT/dH ≈ 1/CthEff (Picard linearization)" << nl
-            << "  Recovery: T = T(H) via SFCC inversion each iteration" << nl
-            << "  Convergence: Dual criterion (T AND H residuals)" << nl
+        Info<< "  Method: APPARENT HEAT CAPACITY (Picard-lagged), OpenFOAM v2506" << nl
+            << "  Solves: c_eff dT/dt = div(K grad T)  with  c_eff = CthEff" << nl
+            << "  CthEff lagged across Picard iterations (fixed-point coupling)" << nl
+            << "  Enthalpy H recovered each iteration for diagnostics only" << nl
+            << "  Convergence: dual criterion (T residual AND delta_f_l)" << nl
             << "  Picard iterations: max " << nCorrectors << ", tol(T) = " << finalTol << " K" << nl
             << "  Liquid fraction relaxation: " << flRelaxation << nl
             << "  Fourier stability: uses CthEff (apparent capacity)" << nl
             << "  CthEff bounds: [" << minCthEff << ", " << maxCthEff << "] J/m³/K" << nl
-            << "  (maxCthEff caps beta to prevent H diffusion stall)" << nl;
+            << "  (maxCthEff used for Fourier guidance)" << nl;
 
         if (SFCCModel == "linear")
         {
@@ -183,7 +192,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        Info<< "  Method: APPARENT HEAT CAPACITY (legacy implicit with Picard)" << nl
+        Info<< "  Method: APPARENT HEAT CAPACITY (non-lagged variant with Picard)" << nl
             << "  Solves: C_eff·∂T/∂t = ∇·(K∇T)" << nl
             << "  nCorrectors: " << nCorrectors << nl
             << "  tolerance: " << finalTol << " K" << nl;
@@ -333,26 +342,26 @@ int main(int argc, char* argv[])
         if (useEnthalpyPorosity)
         {
             // ==============================================================
-            // SOURCE-BASED ENTHALPY-POROSITY METHOD
+            // APPARENT HEAT CAPACITY (Picard-lagged) — PRODUCTION PATH
             //
-            // This solves the energy equation with explicit latent heat source:
+            // Solves the apparent heat-capacity temperature equation:
+            //   c_eff(T) dT/dt = div(K_eff grad T)
             //
-            //   C_sens * ∂T/∂t - ∇·(K∇T) = -L * θ * ∂f_l/∂t
+            // where c_eff = C_sens + L * theta * |df_l/dT|
             //
-            // The latent source is computed from the change in liquid fraction,
-            // which is updated from temperature using the SFCC.
-            //
-            // This avoids the H→T inversion problem while still capturing
-            // the latent heat effect through an iterative source update.
+            // CthEff is computed once at the start of each timestep and
+            // held constant ("lagged") across Picard iterations, making the
+            // equation linear within each timestep.  This prevents the
+            // oscillation caused by CthEff changing with T.
             //
             // Each Picard iteration:
-            //   1. Solve implicit T equation with current latent source
-            //   2. Update f_l from new T
-            //   3. Recompute latent source
-            //   4. Repeat until converged
+            //   1. Solve implicit T equation with lagged CthEff
+            //   2. Update f_l from new T via SFCC
+            //   3. Recover H for diagnostics
+            //   4. Check convergence (T residual and delta_f_l)
             //
-            // REFERENCES:
-            // - Voller & Swaminathan (1991) - Source-based enthalpy method
+            // The fixed-point / under-relaxation strategy follows
+            // Voller & Swaminathan (1991).
             // ==============================================================
 
             converged = false;
@@ -552,7 +561,7 @@ int main(int argc, char* argv[])
         else
         {
             // ==============================================================
-            // LEGACY APPARENT HEAT CAPACITY METHOD (IMPLICIT WITH PICARD)
+            // APPARENT HEAT CAPACITY (non-lagged variant)
             // ==============================================================
             
             converged = false;

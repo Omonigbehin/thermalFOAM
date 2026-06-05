@@ -72,7 +72,7 @@ Tmaxc       Tmaxc       [0 0 0 1 0 0 0]     293.15; // +20 °C
 // -----------------------------------------------------------------------
 SFCCModel       gaussian;
 
-// Solidus / liquidus (used by enthalpy-porosity only)
+// Solidus / liquidus (used by the linear SFCC model)
 T_solidus       272.95;   // K  (−0.20 °C)
 T_liquidus      273.15;   // K  ( 0.00 °C)
 
@@ -89,6 +89,7 @@ thetar_frac     0.0;
 // -----------------------------------------------------------------------
 // SOLVER MODE
 // -----------------------------------------------------------------------
+// Selects the apparent heat-capacity Picard-lagged solve (production/validated path)
 useEnthalpyPorosity     true;
 
 // Minimum CthEff floor (keep small to avoid polluting mushy zone physics)

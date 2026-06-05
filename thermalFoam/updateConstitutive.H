@@ -3,13 +3,13 @@
 
   This file is part of thermalFOAM.
 
-    updateConstitutive.H - Unified Physics Update for Implicit Enthalpy Method
+    updateConstitutive.H - Constitutive property update
 
     This file computes:
-    1. Phase fractions (thetal, thetag) from liquidFraction:
+    1. Phase fractions (thetal, thetag) from liquidFraction
     2. Thermal conductivity (Johansen geometric mean model)
     3. Sensible heat capacity C_sens (no latent contribution)
-    4. Effective heat capacity CthEff = C_sens + L·θ_orig·|∂f_l/∂T| (APPARENT)
+    4. Effective heat capacity CthEff = C_sens + L*theta_orig*|df_l/dT|
 
     KEY DESIGN PRINCIPLES
     ---------------------
@@ -185,8 +185,7 @@ Kth.correctBoundaryConditions();
 // C_sens = sum of component heat capacities weighted by volume fraction
 //
 // Uses EFFECTIVE phase fractions (with wave water), same as Kth.
-// This is the PRIMARY heat capacity for source-based EP method.
-// Latent heat is handled separately in Section 4 using theta_orig.
+// Latent heat is added separately in Section 4 using theta_orig.
 // ========================================================================
 
 forAll(C_sens, cellI)
@@ -315,10 +314,10 @@ if (useEnthalpyPorosity)
 else
 {
     // ====================================================================
-    // LEGACY APPARENT HEAT CAPACITY METHOD
+    // APPARENT HEAT CAPACITY (non-lagged variant)
     //
     // Adds latent heat contribution via SFCC derivative:
-    // C_app = C_sens + L * |∂θ_ice/∂T|
+    // C_app = C_sens + L * |d_theta_ice/dT|
     //
     // Uses ORIGINAL theta for latent heat, same principle as above.
     // ====================================================================

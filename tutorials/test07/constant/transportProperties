@@ -24,7 +24,7 @@ Cthorg      Cthorg      [1 -1 -2 -1 0 0 0]  2.5e6;
 
 
 // SFCC (Soil Freezing Characteristic Curve) PARAMETERS
- // Enthalpy-porosity mushy zone (for phase change smoothing)
+ // Selects the apparent heat-capacity Picard-lagged solve (production/validated path)
 useEnthalpyPorosity     true;
 T_solidus               272.8;    // or appropriate for pure sand
 T_liquidus              274.0;
@@ -39,7 +39,7 @@ SFCC_smoothWidth    0.3; // Recommended: 0.1-0.5 K for laboratory, 0.5-1.0 K for
 
 
 // SFCC Model Selection
-SFCCModel       gaussian;    // Options: "linear", "powerLaw", "gaussian"
+SFCCModel       gaussian;    // Gaussian SFCC as reported in the paper
 
 
 // Gaussian parameters (permaFoam style)

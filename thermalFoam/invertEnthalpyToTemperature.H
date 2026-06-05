@@ -3,15 +3,14 @@
 
   This file is part of thermalFOAM.
 
-    invertEnthalpyToTemperature.H - H → T Inversion for Enthalpy-Primary Method
+    invertEnthalpyToTemperature.H - Diagnostic H/T relationship
 
     PURPOSE
     -------
-    Given enthalpy H, recover temperature T using the relationship:
-        H = C_sens * T + f_l(T) * L * θ
-
-    This is the critical step that allows the enthalpy equation to be solved
-    directly while maintaining temperature for diffusion and boundary conditions.
+    The solver integrates the apparent heat-capacity temperature equation;
+    this header recovers enthalpy H = C_sens*T + f_l(T)*L*theta (and the
+    inverse T(H)) for monitoring, output, and diagnostics.  Newton
+    inversion is used for the Gaussian and power-law SFCC models.
 
     SUPPORTED SFCC MODELS
     ---------------------
@@ -19,23 +18,9 @@
     - "powerLaw" : Newton iteration required
     - "gaussian" : Newton iteration required
 
-    THEORY
-    ------
-    For enthalpy-porosity method, we solve:
-        ∂H/∂t = ∇·(K∇T)
-
-    The H→T inversion handles the phase change singularity properly:
-    - In frozen zone: T = H / C_sens
-    - In mushy zone: T ≈ T_melt (clamped by latent heat)
-    - In thawed zone: T = (H - L*θ) / C_sens
-
-    The key insight is that during melting, H increases continuously while
-    T stays nearly constant. This allows enthalpy diffusion to propagate
-    heat into the interior even when temperature gradients are small.
-
     REFERENCES
     ----------
-    - Voller & Swaminathan (1991) - Fixed grid enthalpy method
+    - Voller & Swaminathan (1991) - Fixed-point / under-relaxation strategy
     - Alexiades & Solomon (1993) - Mathematical modeling of melting
 
 \*---------------------------------------------------------------------------*/

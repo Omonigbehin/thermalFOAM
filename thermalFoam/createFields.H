@@ -75,7 +75,7 @@ const scalar SFCC_W = transportProperties.lookupOrDefault<scalar>("SFCC_W", 1.0)
 // Residual unfrozen water fraction [-] (water that doesn't freeze)
 const scalar thetar_frac = transportProperties.lookupOrDefault<scalar>("thetar_frac", 0.0);
 
-// SFCC smoothing width [K] - used in legacy apparent heat capacity mode
+// SFCC smoothing width [K] - used in the non-lagged apparent heat-capacity variant
 const scalar SFCC_smoothWidth = transportProperties.lookupOrDefault<scalar>("SFCC_smoothWidth", 0.5);
 
 Info<< "\n=== SFCC Model Configuration ===" << nl
@@ -137,10 +137,10 @@ volScalarField theta
 );
 
 // ==========================================================================
-// ENTHALPY FIELD (for diagnostics and output)
+// ENTHALPY FIELD (diagnostics and output only)
 //
-// In source-based EP method, T is primary variable. H is computed from:
-//   H = C_sens * T + f_l * L * θ
+// T is the primary variable. H is recovered for monitoring:
+//   H = C_sens * T + f_l * L * theta
 // ==========================================================================
 
 Info<< "Initializing H (Enthalpy) field\n" << endl;
@@ -206,10 +206,10 @@ volScalarField Cdg
 );
 
 // ==========================================================================
-// SENSIBLE HEAT CAPACITY (primary for source-based EP method)
+// SENSIBLE HEAT CAPACITY
 //
 // C_sens = sum of component heat capacities weighted by volume fraction
-// Does NOT include latent heat - that's handled by the source term
+// Does NOT include latent heat — that is added separately in CthEff
 // ==========================================================================
 
 volScalarField C_sens
@@ -226,7 +226,7 @@ volScalarField C_sens
     dimensionedScalar("zero", Cthsoil.dimensions(), 0.0)
 );
 
-// Apparent heat capacity (for legacy AHC method compatibility)
+// Apparent heat capacity (used by the non-lagged variant)
 volScalarField C_app
 (
     IOobject
@@ -242,8 +242,8 @@ volScalarField C_app
 );
 
 // Effective heat capacity
-// - Source-based EP: CthEff = C_sens
-// - Legacy AHC: CthEff = C_app (includes latent spike)
+// - Picard-lagged path: CthEff = C_sens + L*theta*|df_l/dT| (lagged)
+// - Non-lagged path:    CthEff = C_app (updated each iteration)
 volScalarField CthEff
 (
     IOobject
@@ -276,8 +276,7 @@ volScalarField alphaWater
     dimensionedScalar("zero", dimless, 0.0)
 );
 
-// Liquid fraction - KEY FIELD for enthalpy-porosity method
-// Updated from T in the Picard loop, not from SFCC
+// Liquid fraction — updated from T via the SFCC in the Picard loop
 volScalarField liquidFraction
 (
     IOobject

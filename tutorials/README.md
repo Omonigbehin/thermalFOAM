@@ -20,7 +20,7 @@ temperature.
 | Material | Pure water/ice (no soil matrix, porosity = 1) |
 | SFCC model | Gaussian, width W = 0.1 K, T_solidus = 272.95 K, T_liquidus = 273.15 K |
 | Latent heat | 334 × 10⁶ J/m³ |
-| Solver mode | Enthalpy-porosity |
+| Solver mode | Apparent heat capacity (Picard-lagged) |
 | Run time | 0 – 7200 s (2 hours, adaptive dt) |
 
 ---
@@ -73,7 +73,7 @@ SFCCModel       gaussian;      // freezing curve model
 SFCC_W          0.1;           // Gaussian width [K]
 thetar_frac     0.0;           // no residual unfrozen water
 L               334e6;         // volumetric latent heat [J/m³]
-useEnthalpyPorosity  true;     // solver mode
+useEnthalpyPorosity  true;     // apparent heat-capacity, Picard-lagged path
 
 erosionControls
 {
@@ -127,7 +127,9 @@ Useful visualisations:
 ## test07 — Laboratory bluff erosion (Test 7 validation case)
 
 This tutorial reproduces Test 7 from Omonigbehin et al. (2025): wave-driven thaw
-erosion of a frozen sandy-soil specimen in a wave flume.
+erosion of a frozen sandy-soil specimen in a wave flume. This is the reference
+validation case; its `fvSolution` Picard/solver settings correspond to Table 2 of
+the paper.
 
 ---
 

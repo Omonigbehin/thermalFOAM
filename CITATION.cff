@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "thermalFOAM (v1.0): A parallel OpenFOAM solver for simulating ablative erosion of permafrost bluffs"
+type: software
+authors:
+  - family-names: Omonigbehin
+    given-names: Olorunfemi
+  - family-names: Stolle
+    given-names: Jacob
+  - family-names: Kurylyk
+    given-names: Barret
+  - family-names: Guimond
+    given-names: Julie
+version: 1.0.0
+doi: 10.5281/zenodo.19684137
+license: GPL-3.0
+repository-code: https://github.com/Omonigbehin/thermalFOAM
