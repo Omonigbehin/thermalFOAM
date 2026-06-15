@@ -3,8 +3,6 @@
 
     createErosionControls.H - Simple Thaw-Based Erosion Parameters
       - Cells are removed when liquidFraction >= thawThreshold
-      - No erosion rate law - immediate removal upon reaching threshold
-      - Niche morphology tracking (depth and volume) is retained
 
     This is an helper file that should be included in createFields.H 
 \*---------------------------------------------------------------------------*/
